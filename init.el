@@ -322,8 +322,15 @@ you should place your code here."
 
   ;; Set indentation offset
   (setq-default c-basic-offset 4)
+
+  ;; Scrolling stuff. Might be useless since smooth-scrolling package is enabled
+  ;; and I can't tell if it does anything, but why not
   ;; Stop jerky scrolling
   (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
+  ;; Dont accelerate
+  (setq mouse-wheel-progressive-speed nill)
+  ;; Scroll window under mouse
+  (setq mouse-wheel-follow-mouse 't)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
