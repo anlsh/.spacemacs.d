@@ -318,6 +318,17 @@ you should place your code here."
   ;; Load libraries from the lib/ folder
   (push "~/.spacemacs.d/lib/" load-path)
 
+  ;; Emacs server, woohoo!
+  (unless (server-running-p)
+    (server-start))
+  ;; SPC q q is bound to spacemacs/prompt-kill-emacs by default, but that
+  ;; actually kills the daemon. Here I rebind to a command which destroys
+  ;; the window without stopping server
+  ;; check out https://goo.gl/7o8hna for details
+  (require 'misc)
+  (spacemacs/set-leader-keys
+    "qq" 'anish/nice-quit)
+
   ;; Only open a single dired buffer
   (eval-after-load 'dired '(progn (require 'joseph-single-dired)))
 
@@ -329,7 +340,7 @@ you should place your code here."
   ;; Stop jerky scrolling
   (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
   ;; Dont accelerate
-  (setq mouse-wheel-progressive-speed nill)
+  (setq mouse-wheel-progressive-speed nil)
   ;; Scroll window under mouse
   (setq mouse-wheel-follow-mouse 't)
   )
