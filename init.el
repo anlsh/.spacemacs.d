@@ -326,8 +326,6 @@ you should place your code here."
   ;; the window without stopping server
   ;; check out https://goo.gl/7o8hna for details
   (require 'misc)
-  (spacemacs/set-leader-keys
-    "qq" 'anish/nice-quit)
 
   ;; Only open a single dired buffer
   (eval-after-load 'dired '(progn (require 'joseph-single-dired)))
