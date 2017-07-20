@@ -41,6 +41,7 @@ values."
      auto-completion
      better-defaults
      c-c++
+     common-lisp
      emacs-lisp
      games
      git
