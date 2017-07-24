@@ -334,6 +334,10 @@ you should place your code here."
   ;; Only open a single dired buffer
   (eval-after-load 'dired '(progn (require 'joseph-single-dired)))
 
+  ;; Switch buffers with ctrl left + right
+  (define-key global-map [s-left] 'previous-buffer)
+  (define-key global-map [s-right] 'next-buffer)
+
   ;; Set indentation offset
   (setq-default c-basic-offset 4)
 
