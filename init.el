@@ -359,6 +359,11 @@ you should place your code here."
   (setq magit-commit-reword-override-date nil)
   (setq git-rebase-confirm-cancel nil)
 
+  ;; Generic emacs stuff from the "useful tips page"
+  ;; https://www.emacswiki.org/emacs/DotEmacsChallenge
+  (setq-default indent-tabs-mode nil)
+  (setq require-final-newline t)
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
