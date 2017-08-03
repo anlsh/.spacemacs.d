@@ -351,7 +351,13 @@ you should place your code here."
   (setq mouse-wheel-follow-mouse 't)
 
   ;; When switching to a terminal, enter insert mode by default
-  (evil-initial-state term evil-insert-state))
+  (evil-initial-state term evil-insert-state)
+
+  ;; Magit stuff, the documentation is at
+  ;; https://github.com/magit/magit/blob/master/Documentation/magit.org
+  (setq magit-auto-revert-mode t)
+
+  )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
