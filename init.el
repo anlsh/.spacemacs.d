@@ -356,6 +356,8 @@ you should place your code here."
   ;; Magit stuff, the documentation is at
   ;; https://github.com/magit/magit/blob/master/Documentation/magit.org
   (setq magit-auto-revert-mode t)
+  (setq magit-commit-reword-override-date nil)
+  (setq git-rebase-confirm-cancel nil)
 
   )
 
