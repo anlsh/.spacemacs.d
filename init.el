@@ -45,7 +45,8 @@ values."
      emacs-lisp
      games
      git
-     markdown
+     latex
+     (markdown :variables markdown-live-preview-engine 'vmd)
      org
      helm
      (shell :variables
@@ -321,6 +322,9 @@ you should place your code here."
 
   ;; Load libraries from the lib/ folder
   (push "~/.spacemacs.d/lib/" load-path)
+
+  ;; Set org-agenda location (temporary)
+  (setq org-agenda-files '("~/.org"))
 
   ;; Emacs server, woohoo!
   (unless (server-running-p)
