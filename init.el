@@ -347,6 +347,8 @@ you should place your code here."
   ;; Set indentation offset
   (setq-default c-basic-offset 4)
 
+  (setq-default python-shell-interpreter "python3")
+
   ;; Scrolling stuff. Might be useless since smooth-scrolling package is enabled
   ;; and I can't tell if it does anything, but why not
   ;; Stop jerky scrolling
