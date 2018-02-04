@@ -378,11 +378,11 @@ you should place your code here."
 
   ;; Slime customization
   ; Cycle through history nicely
-  (eval-after-load 'slime-repl
-    `(progn (define-key slime-repl-mode-map (kbd "<up>") 'slime-repl-backward-input)
-            (define-key slime-repl-mode-map (kbd "<down>") 'slime-repl-forward-input)
-            (setq slime-repl-history-remove-duplicates t)
-            (setq slime-repl-history-trim-whitespaces t)))
+  ;; (eval-after-load 'slime-repl
+  ;;   `(progn (define-key slime-repl-mode-map (kbd "<up>") 'slime-repl-backward-input)
+  ;;           (define-key slime-repl-mode-map (kbd "<down>") 'slime-repl-forward-input)
+  ;;           (setq slime-repl-history-remove-duplicates t)
+  ;;           (setq slime-repl-history-trim-whitespaces t)))
 
   ;; Manga merge stuf
   (eval-after-load 'image-mode
