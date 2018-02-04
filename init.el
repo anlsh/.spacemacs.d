@@ -383,12 +383,19 @@ you should place your code here."
             (define-key slime-repl-mode-map (kbd "<down>") 'slime-repl-forward-input)
             (setq slime-repl-history-remove-duplicates t)
             (setq slime-repl-history-trim-whitespaces t)))
+
   ;; Manga merge stuf
   (eval-after-load 'image-mode
     `(progn (define-key image-mode-map (kbd "m") 'manga-merge)
             (define-key image-mode-map (kbd "]") 'image-next-file)
             (define-key image-mode-map (kbd "[") 'image-previous-file)))
+
+  (eval-after-load 'elfeed-search
+    `(add-hook 'elfeed-new-entry-hook
+               (elfeed-make-tagger :feed-title "MangaSee" :entry-title '(not "Onepunch")
+                                   :remove 'unread :add 'junk)))
   )
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
