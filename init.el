@@ -379,6 +379,11 @@ you should place your code here."
     `(define-key slime-repl-mode-map (kbd "<up>") 'slime-repl-backward-input))
   (eval-after-load 'slime-repl
     `(define-key slime-repl-mode-map (kbd "<down>") 'slime-repl-forward-input))
+  ;; Manga merge stuf
+  (eval-after-load 'image-mode
+    `(progn (define-key image-mode-map (kbd "m") 'manga-merge)
+            (define-key image-mode-map (kbd "]") 'image-next-file)
+            (define-key image-mode-map (kbd "[") 'image-previous-file)))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
