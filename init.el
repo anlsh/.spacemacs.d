@@ -42,12 +42,14 @@ values."
      better-defaults
      c-c++
      common-lisp
+     elfeed
      emacs-lisp
      games
      git
      latex
      (markdown :variables markdown-live-preview-engine 'vmd)
      org
+     pdf-tools
      helm
      (shell :variables
             shell-default-height 30
