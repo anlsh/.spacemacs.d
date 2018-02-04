@@ -354,11 +354,11 @@ you should place your code here."
   ;; Scrolling stuff. Might be useless since smooth-scrolling package is enabled
   ;; and I can't tell if it does anything, but why not
   ;; Stop jerky scrolling
-  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
-  ;; Dont accelerate
-  (setq mouse-wheel-progressive-speed nil)
-  ;; Scroll window under mouse
-  (setq mouse-wheel-follow-mouse 't)
+  ;; (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
+  ;; ;; Dont accelerate
+  ;; (setq mouse-wheel-progressive-speed nil)
+  ;; ;; Scroll window under mouse
+  ;; (setq mouse-wheel-follow-mouse 't)
 
   ;; When switching to a terminal, enter insert mode by default
   ;; (evil-initial-state term evil-insert-state)
