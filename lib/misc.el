@@ -21,4 +21,22 @@
        (revert-buffer t 'no-confirm)))
    (buffer-list)))
 
+(defun manga-merge (left-page right-page)
+  "Meant to be used as keyboard macro for merging current manga page with last"
+  (interactive
+   (list buffer-file-name (progn (image-previous-file 1) buffer-file-name)))
+  (let (left-page-file right-page-file)
+    (setf left-page-file (buffer-file-name))
+    (image-previous-file 1)
+    (setf right-page-file (buffer-file-name))
+
+    (shell-command
+     (format "convert +append %s %s %s"
+             (shell-quote-argument left-page)
+             (shell-quote-argument right-page)
+             (shell-quote-argument right-page)))
+    (shell-command (format "rm %s" (shell-quote-argument left-page)))
+    (image-next-file 1))
+  (revert-buffer :ignore-auto :no-confirm))
+
 (provide 'misc)
