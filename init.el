@@ -31,33 +31,22 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     javascript
-     html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
+     helm
      auto-completion
      better-defaults
-     c-c++
-     common-lisp
-     elfeed
      emacs-lisp
-     games
      git
-     latex
-     (markdown :variables markdown-live-preview-engine 'vmd)
+     markdown
      org
-     pdf-tools
-     helm
-     (shell :variables
-            shell-default-height 30
-             shell-default-position 'bottom)
+     ;; (shell :variables
+     ;;        shell-default-height 30
+     ;;        shell-default-position 'bottom)
      ;; spell-checking
-     python
-     rust
-     semantic
      syntax-checking
      ;; version-control
      )
@@ -65,11 +54,13 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(visual-regexp)
+   dotspacemacs-additional-packages '(slime smartparens evil-cleverparens
+                                            visual-regexp visual-regexp-steroids
+                                            shackle)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(org-projectile)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -270,7 +261,7 @@ values."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers t
+   dotspacemacs-line-numbers nil
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -287,7 +278,7 @@ values."
    dotspacemacs-highlight-delimiters 'all
    ;; If non nil, advise quit functions to keep server open when quitting.
    ;; (default nil)
-   dotspacemacs-persistent-server t
+   dotspacemacs-persistent-server nil
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
    ;; (default '("ag" "pt" "ack" "grep"))
@@ -301,7 +292,7 @@ values."
    ;; `trailing' to delete only the whitespace at end of lines, `changed'to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup `changed
+   dotspacemacs-whitespace-cleanup nil
    ))
 
 (defun dotspacemacs/user-init ()
@@ -311,10 +302,7 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
-
-  ;; Open magit status buffer in fullscreen
-  (setq-default git-magit-status-fullscreen t)
-  )
+  (setq-default git-magit-status-fullscreen t))
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -323,48 +311,17 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-
+  
   ;; Load libraries from the lib/ folder
   (push "~/.spacemacs.d/lib/" load-path)
 
   ;; Set org-agenda location (temporary)
   (setq org-agenda-files '("~/.org"))
 
-  ;; Emacs server, woohoo!
-  (unless (server-running-p)
-    (server-start))
-  ;; SPC q q is bound to spacemacs/prompt-kill-emacs by default, but that
-  ;; actually kills the daemon. Here I rebind to a command which destroys
-  ;; the window without stopping server
-  ;; check out https://goo.gl/7o8hna for details
-  (require 'misc)
-
-  ;; Only open a single dired buffer
+  ;; Use only a single dired buffer
   (eval-after-load 'dired '(progn (require 'joseph-single-dired)))
 
-  ;; Switch buffers with ctrl left + right
-  (define-key global-map [s-left] 'previous-buffer)
-  (define-key global-map [s-right] 'next-buffer)
-
-  ;; Set indentation offset
-  (setq-default c-basic-offset 4)
-
-  (setq-default python-shell-interpreter "python3")
-
-  ;; Scrolling stuff. Might be useless since smooth-scrolling package is enabled
-  ;; and I can't tell if it does anything, but why not
-  ;; Stop jerky scrolling
-  ;; (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
-  ;; ;; Dont accelerate
-  ;; (setq mouse-wheel-progressive-speed nil)
-  ;; ;; Scroll window under mouse
-  ;; (setq mouse-wheel-follow-mouse 't)
-
-  ;; When switching to a terminal, enter insert mode by default
-  ;; (evil-initial-state term evil-insert-state)
-
-  ;; Magit stuff, the documentation is at
-  ;; https://github.com/magit/magit/blob/master/Documentation/magit.org
+  ;; Various magit configurations
   (setq magit-auto-revert-mode t)
   (setq magit-commit-reword-override-date nil)
   (setq git-rebase-confirm-cancel nil)
@@ -374,28 +331,27 @@ you should place your code here."
   (setq-default indent-tabs-mode nil)
   (setq require-final-newline t)
 
-  (setq rust-format-on-save t)
+  ;; Slime configuration
+  (setq-default slime-repl-history-remove-duplicates t)
+  (setq-default slime-repl-history-trim-whitespaces t)
 
-  ;; Slime customization
-  ; Cycle through history nicely
-  ;; (eval-after-load 'slime-repl
-  ;;   `(progn (define-key slime-repl-mode-map (kbd "<up>") 'slime-repl-backward-input)
-  ;;           (define-key slime-repl-mode-map (kbd "<down>") 'slime-repl-forward-input)
-  ;;           (setq slime-repl-history-remove-duplicates t)
-  ;;           (setq slime-repl-history-trim-whitespaces t)))
+  ;; Shackle stuff
+  (setq shackle-rules
+        '(("*shell*" :same t :inhibit-window-quit t)
+          ("*Python*" :same t :inhibit-window-quit t)))
+  (shackle-mode)
 
-  ;; Manga merge stuf
-  (eval-after-load 'image-mode
-    `(progn (define-key image-mode-map (kbd "m") 'manga-merge)
-            (define-key image-mode-map (kbd "]") 'image-next-file)
-            (define-key image-mode-map (kbd "[") 'image-previous-file)))
-
-  (eval-after-load 'elfeed-search
-    `(add-hook 'elfeed-new-entry-hook
-               (elfeed-make-tagger :feed-title "MangaSee" :entry-title '(not "Onepunch")
-                                   :remove 'unread :add 'junk)))
+  ;; (hook 'lisp-mode-hook 'smartparens-mode)
+  ;; (hook 'lisp-mode-hook 'smartparens-strict-mode)
+  ;; (hook 'lisp-mode-hook 'evil-cleverparens-mode)
+  (loop for major-mode-hook in '(lisp-mode-hook
+                                 slime-repl-mode-hook
+                                 emacs-lisp-mode-hook)
+        do (loop for minor-mode in '(smartparens-mode
+                                     smartparens-strict-mode
+                                     evil-cleverparens-mode)
+                 do (add-hook major-mode-hook minor-mode)))
   )
-
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -404,15 +360,9 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(elfeed-feeds
-   (quote
-    ("http://feeds.wnyc.org/radiolab" "http://nullprogram.com/feed/" "http://mangaseeonline.us/rss/" "https://feeds.feedburner.com/scotusblog/pFXs" "https://www.popehat.com/feed/" "http://pragmaticemacs.com/feed/" "https://feeds2.feedburner.com/webupd8")))
  '(package-selected-packages
    (quote
-    (toml-mode racer flycheck-rust cargo rust-mode typit mmt sudoku pacmacs 2048-game slime common-lisp-snippets web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data disaster company-c-headers cmake-mode clang-format yapfify xterm-color unfill smeargle shell-pop pyvenv pytest pyenv-mode py-isort pip-requirements orgit org-projectile org-present org-pomodoro alert log4e gntp org-download mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow live-py-mode hy-mode htmlize helm-pydoc helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help cython-mode company-statistics company-anaconda company auto-yasnippet yasnippet anaconda-mode pythonic ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg eval-sexp-fu highlight elisp-slime-nav dumb-jump diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed ace-link ace-jump-helm-line helm helm-core popup undo-tree hydra async aggressive-indent adaptive-wrap ace-window avy org-plus-contrib evil-unimpaired f s dash))))
- '(python-shell-interpreter "python3"))
- '(slime-repl-history-remove-duplicates t)
- '(slime-repl-history-trim-whitespaces t))
+    (visual-regexp-steroids visual-regexp unfill smeargle slime shackle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor evil-cleverparens paredit company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
