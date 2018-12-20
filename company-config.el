@@ -17,25 +17,39 @@
 ;;; - https://emacs.stackexchange.com/q/27459/12534
 
 ;; <return> is for windowed Emacs; RET is for terminal Emacs
-(dolist (key '("<return>" "RET"))
-  ;; Here we are using an advanced feature of define-key that lets
-  ;; us pass an "extended menu item" instead of an interactive
-  ;; function. Doing this allows RET to regain its usual
-  ;; functionality when the user has not explicitly interacted with
-  ;; Company.
-  (define-key company-active-map (kbd key)
-    `(menu-item nil company-complete
-                :filter ,(lambda (cmd)
-                           (when (company-explicit-action-p)
-                             cmd)))))
-(define-key company-active-map (kbd "TAB") #'company-complete-selection)
-(define-key company-active-map (kbd "SPC") nil)
+;; (dolist (key '("<return>" "RET"))
+;;   ;; Here we are using an advanced feature of define-key that lets
+;;   ;; us pass an "extended menu item" instead of an interactive
+;;   ;; function. Doing this allows RET to regain its usual
+;;   ;; functionality when the user has not explicitly interacted with
+;;   ;; Company.
+;;   (define-key company-active-map (kbd key)
+;;     `(menu-item nil company-complete
+;;                 :filter ,(lambda (cmd)
+;;                            (when (company-explicit-action-p)
+;;                              cmd)))))
+;; (define-key company-active-map (kbd "TAB") #'company-complete-selection)
+;; (define-key company-active-map (kbd "SPC") nil)
 
 ; Pulled from some stackoverflow post, I don't think it does anything :|
-(use-package company
-  :custom
-  (company-auto-complete 'company-explicit-action-p))
+;; (use-package company
+;;   :custom
+;;   (company-auto-complete 'company-explicit-action-p))
 
 ;; Company appears to override the above keymap based on company-auto-complete-chars.
 ;; Turning it off ensures we have full control.
-(setq company-auto-complete-chars nil)
+;; (setq company-auto-complete-chars nil)
+
+(use-package company
+  :defer 0.5
+  :delight
+  :custom
+  (company-begin-commands '(self-insert-command))
+  (company-idle-delay .1)
+  (company-minimum-prefix-length 3)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (global-company-mode t))
+
+;; (with-eval-after-load 'company
+;;   (company-flx-mode +1))
