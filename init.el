@@ -358,6 +358,8 @@ you should place your code here."
 
   ;; Auto-authenticate erc, from https://www.emacswiki.org/emacs/ErcNickserv
   (load "erc-config.el")
+  (load "company-config.el")
+  ;; Company mode stuff
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
