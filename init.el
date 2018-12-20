@@ -38,6 +38,7 @@ values."
      ;; ----------------------------------------------------------------
      helm
      auto-completion
+     erc
      better-defaults
      emacs-lisp
      git
@@ -312,8 +313,9 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  
+
   ;; Load libraries from the lib/ folder
+  (push "~/.spacemacs.d/" load-path)
   (push "~/.spacemacs.d/lib/" load-path)
 
   ;; Set org-agenda location (temporary)
@@ -342,16 +344,20 @@ you should place your code here."
           ("*Python*" :same t :inhibit-window-quit t)))
   (shackle-mode)
 
-  ;; (hook 'lisp-mode-hook 'smartparens-mode)
-  ;; (hook 'lisp-mode-hook 'smartparens-strict-mode)
-  ;; (hook 'lisp-mode-hook 'evil-cleverparens-mode)
+  ;; Set hooks for lisp modes!
   (loop for major-mode-hook in '(lisp-mode-hook
                                  slime-repl-mode-hook
-                                 emacs-lisp-mode-hook)
+                                 emacs-lisp-mode-hook
+                                 inferior-emacs-lisp-mode-hook)
         do (loop for minor-mode in '(smartparens-mode
                                      smartparens-strict-mode
                                      evil-cleverparens-mode)
                  do (add-hook major-mode-hook minor-mode)))
+  (setq slime-repl-mode-hook (remove 'slime/disable-smartparens
+                                     slime-repl-mode-hook))
+
+  ;; Auto-authenticate erc, from https://www.emacswiki.org/emacs/ErcNickserv
+  (load "erc-config.el")
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -363,7 +369,7 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (slime-company common-lisp-snippets visual-regexp-steroids visual-regexp unfill smeargle slime shackle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor evil-cleverparens paredit company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks slime-company common-lisp-snippets visual-regexp-steroids visual-regexp unfill smeargle slime shackle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor evil-cleverparens paredit company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
