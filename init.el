@@ -355,9 +355,21 @@ you should place your code here."
                                      smartparens-strict-mode
                                      evil-cleverparens-mode)
                  do (add-hook major-mode-hook minor-mode)))
+  (add-hook 'lisp-mode-hook 'aggressive-indent-mode)
+  (add-hook 'emacs-lisp-mode-hook 'aggressive-indent-mode)
   (setq slime-repl-mode-hook (remove 'slime/disable-smartparens
                                      slime-repl-mode-hook))
   (slime-setup '(slime-fancy slime-company))
+
+  ; Delete trailing whitespace!
+  (use-package whitespace
+    :defer 1
+    :hook (before-save . delete-trailing-whitespace))
+
+  (use-package hungry-delete
+    :defer 0.7
+    :delight
+    :config (global-hungry-delete-mode))
 
   ;; TODO Stop slime from completing on its own (extremely poor behavior)
   ;; Kinda hit the problem with a hammer though...
