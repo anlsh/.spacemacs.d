@@ -30,37 +30,28 @@ values."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
-     helm
-     auto-completion
-     erc
+   '(auto-completion
      better-defaults
+     command-log
+     common-lisp
+     coq
      emacs-lisp
+     erc
      git
+     helm
+     ;; latex
      markdown
      org
-     common-lisp
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
-     ;; spell-checking
-     syntax-checking
-     ;; version-control
-     )
+     python
+     syntax-checking)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(smartparens
+   dotspacemacs-additional-packages '(company-coq
                                       evil-cleverparens
-                                      visual-regexp visual-regexp-steroids
-                                      shackle
-                                      )
+                                      proof-general
+                                      shackle)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -271,7 +262,7 @@ values."
    dotspacemacs-folding-method 'evil
    ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
-   dotspacemacs-smartparens-strict-mode nil
+   dotspacemacs-smartparens-strict-mode t
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
    ;; over any automatically added closing parenthesis, bracket, quote, etc…
    ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
@@ -306,7 +297,7 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
-  (setq-default git-magit-status-fullscreen t))
+  )
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -319,68 +310,112 @@ you should place your code here."
   ;; Load libraries from the lib/ folder
   (push "~/.spacemacs.d/" load-path)
   (push "~/.spacemacs.d/lib/" load-path)
-
-  ;; Set org-agenda location (temporary)
-  (setq org-agenda-files '("~/.org"))
-
-  ;; Use only a single dired buffer
-  (eval-after-load 'dired '(progn (require 'joseph-single-dired)))
-
-  ;; Various magit configurations
-  (setq magit-auto-revert-mode t)
-  (setq magit-commit-reword-override-date nil)
-  (setq git-rebase-confirm-cancel nil)
+  (global-linum-mode)
+  (linum-relative-global-mode)
 
   ;; Generic emacs stuff from the "useful tips page"
   ;; https://www.emacswiki.org/emacs/DotEmacsChallenge
   (setq-default indent-tabs-mode nil)
   (setq require-final-newline t)
 
-  ;; Slime configuration
-  (setq-default slime-repl-history-remove-duplicates t)
-  (setq-default slime-repl-history-trim-whitespaces t)
-
-  ;; Shackle stuff
-  (setq shackle-rules
-        '(("*shell*" :same t :inhibit-window-quit t)
-          ("*Python*" :same t :inhibit-window-quit t)))
-  (shackle-mode)
-
   ;; Set hooks for lisp modes!
   (loop for major-mode-hook in '(lisp-mode-hook
                                  slime-repl-mode-hook
                                  emacs-lisp-mode-hook
                                  inferior-emacs-lisp-mode-hook)
-        do (loop for minor-mode in '(smartparens-mode
-                                     smartparens-strict-mode
+        do (loop for minor-mode in '(smartparens-strict-mode
                                      evil-cleverparens-mode)
                  do (add-hook major-mode-hook minor-mode)))
+
   (add-hook 'lisp-mode-hook 'aggressive-indent-mode)
   (add-hook 'emacs-lisp-mode-hook 'aggressive-indent-mode)
-  (setq slime-repl-mode-hook (remove 'slime/disable-smartparens
-                                     slime-repl-mode-hook))
-  (slime-setup '(slime-fancy slime-company))
 
-  ; Delete trailing whitespace!
-  (use-package whitespace
-    :defer 1
-    :hook (before-save . delete-trailing-whitespace))
+  (use-package company
+    :defer 0.5
+    :custom
+    (company-begin-commands '(self-insert-command))
+    (company-idle-delay .1)
+    (company-minimum-prefix-length 3)
+    (company-show-numbers t)
+    (company-tooltip-align-annotations 't)
+    (company-auto-complete-chars nil)
 
+    :bind (:map company-active-map
+                ("TAB" . #'company-complete-selection)
+                ("<tab>" . #'company-complete-selection)
+                ("SPC" . nil)
+                ("RET" . nil)
+                ("<return>" . nil))
+    :config
+    (global-company-mode))
+
+  (use-package company-coq
+    :custom
+    (coq-compile-before-require t)
+    :config
+    (load "~/.emacs.d/lisp/proof-general/generic/proof-site.el"))
+
+  (use-package dired
+    :config
+    (require 'joseph-single-dired))
+
+  (use-package evil
+    :init
+    ;; Without this line, coq mode is pretty much unusable because of
+    ;; over-aggressive autocompletion
+    (setq evil-want-abbrev-expand-on-insert-exit nil))
+
+  ;; TODO Unfortunately hungry-delete has some sort of conflict with smartparens
+  ;; See https://github.com/Fuco1/smartparens/issues/750
   (use-package hungry-delete
     :defer 0.7
     :delight
-    :config (global-hungry-delete-mode))
+    ;; :config (global-hungry-delete-mode)
+    )
 
-  ;; TODO Stop slime from completing on its own (extremely poor behavior)
-  ;; Kinda hit the problem with a hammer though...
-  (setq slime-complete-symbol-function nil)
-  (setq slime-completion-at-point-functions nil)
+  (use-package magit
+    :init
+    (setq git-magit-status-fullscreen t)
+    :custom
+    (magit-auto-revert-mode t)
+    (git-rebase-confirm-cancel nil))
 
-  ;; Auto-authenticate erc, from https://www.emacswiki.org/emacs/ErcNickserv
-  (load "erc-config.el")
-  (load "company-config.el")
-  ;; Company mode stuff
-  )
+  (use-package org
+    :custom
+    (org-agenda-files '("~/org"))
+    (org-agenda-window-setup 'only-window))
+
+  (use-package python
+    :custom
+    (python-indent-offset 4))
+
+  (use-package shackle
+    :custom (shackle-rules
+             '(("*shell*" :same t :inhibit-window-quit t)
+               ("*Python*" :same t :inhibit-window-quit t)))
+    :config
+    (shackle-mode))
+
+  (use-package slime
+    :custom
+    ;; TODO Stop slime from completing on its own (extremely poor behavior)
+    ;; Kinda hit the problem with a hammer though...
+    (slime-complete-symbol-function nil)
+    (slime-completion-at-point-functions nil)
+    (slime-repl-history-remove-duplicates t)
+    (slime-repl-history-trim-whitespaces t)
+    :config
+    (setq slime-repl-mode-hook (remove 'slime/disable-smartparens
+                                       slime-repl-mode-hook))
+    (slime-setup '(slime-company)))
+
+  (use-package smartparens
+    :config (smartparens-global-strict-mode))
+
+  (use-package whitespace
+    :hook (before-save . delete-trailing-whitespace)
+    :config (global-whitespace-mode)))
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -389,12 +424,15 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files (quote ("~/org")))
  '(package-selected-packages
    (quote
-    (company-flx erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks slime-company common-lisp-snippets visual-regexp-steroids visual-regexp unfill smeargle slime shackle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor evil-cleverparens paredit company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (slime-company gnu-elpa-keyring-update command-log-mode pdf-tools company-web proof-general company-coq company-math math-symbol-lists tablist web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode web-completion-data yaml-mode ace-jump-mode noflet elfeed csv-mode ein deferred websocket web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern tern coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode dash-functional helm-pydoc cython-mode company-anaconda anaconda-mode pythonic auctex-latexmk company-auctex auctex company-flx erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks common-lisp-snippets visual-regexp-steroids visual-regexp unfill smeargle slime shackle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor evil-cleverparens company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(proof-eager-annotation-face ((t (:background "medium blue"))))
+ '(proof-error-face ((t (:background "dark red"))))
+ '(proof-warning-face ((t (:background "indianred3")))))
