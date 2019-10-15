@@ -49,7 +49,12 @@
   (company-minimum-prefix-length 3)
   (company-show-numbers t)
   (company-tooltip-align-annotations 't)
-  (global-company-mode t))
+  (company-auto-complete-chars nil)
+  (global-company-mode t)
 
-;; (with-eval-after-load 'company
-;;   (company-flx-mode +1))
+  :bind (:map company-active-map
+              ("TAB" . #'company-complete-selection)
+              ("<tab>" . #'company-complete-selection)
+              ("SPC" . nil)
+              ("RET" . nil)
+              ("<return>" . nil)))
