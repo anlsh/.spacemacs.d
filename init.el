@@ -398,16 +398,14 @@ you should place your code here."
 
   (use-package slime
     :custom
-    ;; TODO Stop slime from completing on its own (extremely poor behavior)
-    ;; Kinda hit the problem with a hammer though...
-    (slime-complete-symbol-function nil)
     (slime-completion-at-point-functions nil)
     (slime-repl-history-remove-duplicates t)
     (slime-repl-history-trim-whitespaces t)
     :config
     (setq slime-repl-mode-hook (remove 'slime/disable-smartparens
                                        slime-repl-mode-hook))
-    (slime-setup '(slime-company)))
+    (slime-setup '(slime-company))
+    (setq slime-completion-at-point-functions nil))
 
   (use-package smartparens
     :config (smartparens-global-strict-mode))
