@@ -30,7 +30,8 @@ values."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(auto-completion
+   '(
+     auto-completion
      better-defaults
      command-log
      common-lisp
@@ -39,7 +40,7 @@ values."
      erc
      git
      helm
-     ;; latex
+     javascript
      markdown
      org
      python
@@ -297,6 +298,8 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+  (setq evil-want-abbrev-expand-on-insert-exit nil)
+  (setq-default evil-want-abbrev-expand-on-insert-exit nil)
   )
 
 (defun dotspacemacs/user-config ()
@@ -363,6 +366,10 @@ you should place your code here."
     :init
     ;; Without this line, coq mode is pretty much unusable because of
     ;; over-aggressive autocompletion
+    ;; ALERT: This actually does nothing, and has to be set in user-init first.
+    ;; Check out following links for details
+    ;; https://github.com/ProofGeneral/PG/issues/174
+    ;; https://github.com/hlissner/doom-emacs/pull/896
     (setq evil-want-abbrev-expand-on-insert-exit nil))
 
   ;; TODO Unfortunately hungry-delete has some sort of conflict with smartparens
@@ -410,6 +417,7 @@ you should place your code here."
   (use-package smartparens
     :config (smartparens-global-strict-mode))
 
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
   (use-package whitespace
     :hook (before-save . delete-trailing-whitespace)
     :config (global-whitespace-mode)))
