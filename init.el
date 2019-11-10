@@ -40,7 +40,7 @@ values."
      erc
      git
      helm
-     javascript
+     latex
      markdown
      org
      python
