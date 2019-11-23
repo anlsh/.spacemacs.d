@@ -34,7 +34,7 @@ values."
      auto-completion
      better-defaults
      command-log
-     common-lisp
+     common-lisp-sly
      coq
      emacs-lisp
      erc
@@ -314,7 +314,6 @@ you should place your code here."
   (push "~/.spacemacs.d/" load-path)
   (push "~/.spacemacs.d/lib/" load-path)
   (global-linum-mode)
-  (linum-relative-global-mode)
 
   ;; Generic emacs stuff from the "useful tips page"
   ;; https://www.emacswiki.org/emacs/DotEmacsChallenge
@@ -403,16 +402,16 @@ you should place your code here."
     :config
     (shackle-mode))
 
-  (use-package slime
-    :custom
-    (slime-completion-at-point-functions nil)
-    (slime-repl-history-remove-duplicates t)
-    (slime-repl-history-trim-whitespaces t)
+  (use-package sly
     :config
-    (setq slime-repl-mode-hook (remove 'slime/disable-smartparens
-                                       slime-repl-mode-hook))
-    (slime-setup '(slime-company))
-    (setq slime-completion-at-point-functions nil))
+    (define-key sly-mode-map (kbd "TAB") nil)
+    (define-key sly-mode-map (kbd "<tab>") nil)
+    (define-key sly-minibuffer-map (kbd "TAB") nil)
+    (define-key sly-minibuffer-map (kbd "<tab>") nil)
+    (define-key sly-prefix-map (kbd "TAB") nil)
+    (define-key sly-prefix-map (kbd "<tab>") nil)
+    (define-key sly-mrepl-mode-map (kbd "TAB") nil)
+    (define-key sly-mrepl-mode-map (kbd "<tab>") nil))
 
   (use-package smartparens
     :config (smartparens-global-strict-mode))
@@ -433,7 +432,7 @@ you should place your code here."
  '(org-agenda-files (quote ("~/org")))
  '(package-selected-packages
    (quote
-    (slime-company gnu-elpa-keyring-update command-log-mode pdf-tools company-web proof-general company-coq company-math math-symbol-lists tablist web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode web-completion-data yaml-mode ace-jump-mode noflet elfeed csv-mode ein deferred websocket web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern tern coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode dash-functional helm-pydoc cython-mode company-anaconda anaconda-mode pythonic auctex-latexmk company-auctex auctex company-flx erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks common-lisp-snippets visual-regexp-steroids visual-regexp unfill smeargle slime shackle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor evil-cleverparens company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (bug-hunter sly-repl-ansi-color sly-macrostep sly slime-company gnu-elpa-keyring-update command-log-mode pdf-tools company-web proof-general company-coq company-math math-symbol-lists tablist web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode web-completion-data yaml-mode ace-jump-mode noflet elfeed csv-mode ein deferred websocket web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern tern coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode dash-functional helm-pydoc cython-mode company-anaconda anaconda-mode pythonic auctex-latexmk company-auctex auctex company-flx erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks common-lisp-snippets visual-regexp-steroids visual-regexp unfill smeargle slime shackle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor evil-cleverparens company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
