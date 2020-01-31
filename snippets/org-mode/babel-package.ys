@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Babel-Package
+# key: bpack
+# --
+#+BEGIN_SRC sh :tangle packages.txt
+$0
+#+END_SRC
