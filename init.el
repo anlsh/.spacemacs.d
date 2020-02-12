@@ -388,9 +388,8 @@ you should place your code here."
     )
 
   (use-package magit
-    :init
-    (setq git-magit-status-fullscreen t)
     :custom
+    (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
     (magit-auto-revert-mode t)
     (git-rebase-confirm-cancel nil))
 
