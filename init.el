@@ -34,7 +34,7 @@ values."
      auto-completion
      better-defaults
      command-log
-     ;; coq
+     coq
      emacs-lisp
      erc
      git
@@ -53,7 +53,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages
    '(
-     ;; company-coq
+     company-coq
      company-quickhelp
      evil-cleverparens
      geiser
@@ -366,9 +366,11 @@ you should place your code here."
     :custom (company-quickhelp-delay 0)
     :config (company-quickhelp-mode))
 
-  ;; (use-package company-coq
-  ;;   :custom
-  ;;   (coq-compile-before-require t))
+  (use-package company-coq
+    :custom
+    (coq-compile-before-require t)
+    :config
+    (load "~/.emacs.d/private/proof-general/generic/proof-site"))
 
   (use-package dired
     :config
