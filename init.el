@@ -34,7 +34,7 @@ values."
      auto-completion
      better-defaults
      command-log
-     coq
+     ;; coq
      emacs-lisp
      erc
      git
@@ -45,18 +45,20 @@ values."
      pdf-tools
      python
      scheme
-     syntax-checking)
+     syntax-checking
+     )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(company-coq
-                                      company-quickhelp
-                                      evil-cleverparens
-                                      proof-general
-                                      shackle)
-   ;; A list of packages that cannot be updated.
-   dotspacemacs-frozen-packages '()
+   dotspacemacs-additional-packages
+   '(
+     ;; company-coq
+     company-quickhelp
+     evil-cleverparens
+     geiser
+     shackle
+     )
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(org-projectile)
    ;; Defines the behaviour of Spacemacs when installing packages.
@@ -290,7 +292,7 @@ values."
    ;; `trailing' to delete only the whitespace at end of lines, `changed'to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup nil
+   dotspacemacs-whitespace-cleanup 'changed
    ))
 
 (defun dotspacemacs/user-init ()
@@ -327,6 +329,7 @@ you should place your code here."
 
   ;; Set hooks for lisp modes!
   (loop for major-mode-hook in '(lisp-mode-hook
+                                 scheme-mode-hook
                                  slime-repl-mode-hook
                                  emacs-lisp-mode-hook
                                  inferior-emacs-lisp-mode-hook)
@@ -361,11 +364,9 @@ you should place your code here."
     :custom (company-quickhelp-delay 0)
     :config (company-quickhelp-mode))
 
-  (use-package company-coq
-    :custom
-    (coq-compile-before-require t)
-    :config
-    (load "~/.emacs.d/lisp/proof-general/generic/proof-site.el"))
+  ;; (use-package company-coq
+  ;;   :custom
+  ;;   (coq-compile-before-require t))
 
   (use-package dired
     :config
@@ -383,7 +384,9 @@ you should place your code here."
 
   (use-package geiser
     :custom
-    (setq geiser-active-implementations '(chicken)))
+    (geiser-active-implementations '(chicken))
+    ;; (geiser-chicken-compile-geiser-p nil)
+    )
 
   ;; TODO Unfortunately hungry-delete has some sort of conflict with smartparens
   ;; See https://github.com/Fuco1/smartparens/issues/750
@@ -487,7 +490,7 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(org-agenda-files '("~/org"))
  '(package-selected-packages
-   '(geiser company-quickhelp lv transient paredit bug-hunter sly-repl-ansi-color sly-macrostep sly slime-company gnu-elpa-keyring-update command-log-mode pdf-tools company-web proof-general company-coq company-math math-symbol-lists tablist web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode web-completion-data yaml-mode ace-jump-mode noflet elfeed csv-mode ein deferred websocket web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern tern coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode dash-functional helm-pydoc cython-mode company-anaconda anaconda-mode pythonic auctex-latexmk company-auctex auctex company-flx erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks common-lisp-snippets visual-regexp-steroids visual-regexp unfill smeargle slime shackle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor evil-cleverparens company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+   '(proof-general geiser company-quickhelp lv transient paredit bug-hunter sly-repl-ansi-color sly-macrostep sly slime-company gnu-elpa-keyring-update command-log-mode pdf-tools company-web company-coq company-math math-symbol-lists tablist web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode web-completion-data yaml-mode ace-jump-mode noflet elfeed csv-mode ein deferred websocket web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern tern coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode dash-functional helm-pydoc cython-mode company-anaconda anaconda-mode pythonic auctex-latexmk company-auctex auctex company-flx erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks common-lisp-snippets visual-regexp-steroids visual-regexp unfill smeargle slime shackle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor evil-cleverparens company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
