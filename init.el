@@ -34,6 +34,7 @@ values."
      auto-completion
      better-defaults
      command-log
+     common-lisp
      coq
      emacs-lisp
      erc
