@@ -343,6 +343,7 @@ you should place your code here."
   (loop for hook in my-lisp-hooks do
         ;; For some bizarre reason the slime repl has a hook to disable smartparens
         (remove-hook hook #'slime/disable-smartparens)
+        (add-hook hook (lambda () (setq tab-always-indent t)))
         ;; Add the hooks I want enabled!
         (loop for mode in my-lisp-modes do
               (add-hook
