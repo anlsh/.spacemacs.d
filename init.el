@@ -294,7 +294,6 @@ values."
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
 
-   ;; WARNING: Setting this variable to "changed" breaks magit
    dotspacemacs-whitespace-cleanup nil
    ))
 
@@ -331,17 +330,24 @@ you should place your code here."
   (setq require-final-newline t)
 
   ;; Set hooks for lisp modes!
-  (loop for major-mode-hook in '(lisp-mode-hook
-                                 scheme-mode-hook
-                                 slime-repl-mode-hook
-                                 emacs-lisp-mode-hook
-                                 inferior-emacs-lisp-mode-hook)
-        do (loop for minor-mode in '(smartparens-strict-mode
-                                     evil-cleverparens-mode)
-                 do (add-hook major-mode-hook minor-mode)))
+  (defvar my-lisp-hooks '(lisp-mode-hook
+                          scheme-mode-hook
+                          slime-mode-hook
+                          slime-repl-mode-hook
+                          emacs-lisp-mode-hook
+                          inferior-emacs-lisp-mode-hook))
+  (defvar my-lisp-modes '(smartparens-mode
+                          smartparens-strict-mode
+                          evil-cleverparens-mode))
 
-  (add-hook 'lisp-mode-hook 'aggressive-indent-mode)
-  (add-hook 'emacs-lisp-mode-hook 'aggressive-indent-mode)
+  (loop for hook in my-lisp-hooks do
+        ;; For some bizarre reason the slime repl has a hook to disable smartparens
+        (remove-hook hook #'slime/disable-smartparens)
+        ;; Add the hooks I want enabled!
+        (loop for mode in my-lisp-modes do
+              (add-hook
+               hook
+               (lexical-let ((mode mode)) (lambda () (funcall mode 1))))))
 
   (use-package company
     :defer t
@@ -423,10 +429,6 @@ you should place your code here."
     :config
     (shackle-mode))
 
-  (use-package smartparens
-    :config (smartparens-global-strict-mode))
-
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
   (use-package whitespace
     :hook (before-save . delete-trailing-whitespace)
     :config (global-whitespace-mode))
