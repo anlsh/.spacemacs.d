@@ -43,7 +43,7 @@ values."
      latex
      markdown
      org
-     pdf-tools
+     pdf
      python
      scheme
      spacemacs-purpose
@@ -231,7 +231,7 @@ values."
    ;; If non nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup nil
+   dotspacemacs-maximized-at-startup t
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -370,15 +370,15 @@ you should place your code here."
     (global-company-mode))
 
   (use-package company-quickhelp
-    :ensure t
+    :defer t
     :custom (company-quickhelp-delay 0)
     :config (company-quickhelp-mode))
 
-  (use-package company-coq
-    :custom
-    (coq-compile-before-require t)
-    :config
-    (load "~/.emacs.d/private/proof-general/generic/proof-site"))
+  ;; (use-package company-coq
+  ;;   :custom
+  ;;   (coq-compile-before-require t)
+  ;;   :config
+  ;;   (load "~/.emacs.d/private/proof-general/generic/proof-site"))
 
   (use-package dired
     :config
@@ -431,21 +431,16 @@ you should place your code here."
 
   (use-package window-purpose
     :custom
-    (purpose-layout-dirs '("~/Code/.spacemacs.d/layouts/"))
-    ;; (purpose-mode-user-purposes '((lisp-mode . cl-src)
-    ;;                               (sldb-mode . cl-repl)
-    ;;                               (slime-repl-mode . cl-repl)
-    ;;                               (fundamental-mode . cl-repl)
-    ;;                               (comint-mode . cl-repl)
-    ;;                               (slime-inspector-mode . cl-general)))
+    (purpose-layout-dirs '("~/.spacemacs.d/layouts/"))
+    ;; Although the package suggests using add-to-list, default value is nil
+    (purpose-mode-user-purposes '((lisp-mode . cl-src)
+                                  (sldb-mode . cl-repl)
+                                  (slime-repl-mode . cl-repl)
+                                  (slime-inspector-mode . cl-general)))
+    (purpose-user-name-purposes '(("*inferior-lisp*" . cl-repl)
+                                  ("*slime-repl sbcl*" . cl-repl)))
+    (purpose-user-regexp-purposes '(( "\*sldb.*" . cl-repl)))
     :config
-
-    (add-to-list 'purpose-user-mode-purposes '(sldb-mode . cl-repl))
-    (add-to-list 'purpose-user-mode-purposes '(slime-repl-mode . cl-repl))
-    (add-to-list 'purpose-user-mode-purposes '(comint-mode . cl-repl))
-    (add-to-list 'purpose-user-mode-purposes '(sldb-mode . cl-repl))
-    (add-to-list 'purpose-user-mode-purposes '(fundamental-mode . cl-repl))
-
     (purpose-compile-user-configuration))
 
   (use-package whitespace
