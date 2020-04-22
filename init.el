@@ -46,6 +46,7 @@ values."
      pdf-tools
      python
      scheme
+     spacemacs-purpose
      syntax-checking
      )
    ;; List of additional packages that will be installed without being
@@ -427,6 +428,25 @@ you should place your code here."
              '((shell-mode :same t :inhibit-window-quit t)))
     :config
     (shackle-mode))
+
+  (use-package window-purpose
+    :custom
+    (purpose-layout-dirs '("~/Code/.spacemacs.d/layouts/"))
+    ;; (purpose-mode-user-purposes '((lisp-mode . cl-src)
+    ;;                               (sldb-mode . cl-repl)
+    ;;                               (slime-repl-mode . cl-repl)
+    ;;                               (fundamental-mode . cl-repl)
+    ;;                               (comint-mode . cl-repl)
+    ;;                               (slime-inspector-mode . cl-general)))
+    :config
+
+    (add-to-list 'purpose-user-mode-purposes '(sldb-mode . cl-repl))
+    (add-to-list 'purpose-user-mode-purposes '(slime-repl-mode . cl-repl))
+    (add-to-list 'purpose-user-mode-purposes '(comint-mode . cl-repl))
+    (add-to-list 'purpose-user-mode-purposes '(sldb-mode . cl-repl))
+    (add-to-list 'purpose-user-mode-purposes '(fundamental-mode . cl-repl))
+
+    (purpose-compile-user-configuration))
 
   (use-package whitespace
     :hook (before-save . delete-trailing-whitespace)
