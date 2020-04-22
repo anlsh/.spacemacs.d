@@ -410,6 +410,7 @@ you should place your code here."
      ;; Unfortunately modifying top-level binds like "SPC *" doesn't override
      ;; the which-key string. Also I don't know how to do which-key "folders"
      ;; The commands themselves seem to work fine though
+     "wp" '(:ignore t :which-key "purpose")
      "wpl" '(purpose-load-window-layout :which-key "purpose-load-layout")
      "wps" '(purpose-save-window-layout t :which-key "purpose-save-layout")))
 
