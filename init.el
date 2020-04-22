@@ -319,7 +319,6 @@ you should place your code here."
   ;; Load libraries from the lib/ folder
   (push "~/.spacemacs.d/" load-path)
   (push "~/.spacemacs.d/lib/" load-path)
-  (add-hook 'prog-mode-hook 'linum-on)
 
   (org-babel-do-load-languages 'org-babel-load-languages
                                '((shell . t)))
@@ -425,8 +424,7 @@ you should place your code here."
 
   (use-package shackle
     :custom (shackle-rules
-             '(("*shell*" :same t :inhibit-window-quit t)
-               ("*Python*" :same t :inhibit-window-quit t)))
+             '((shell-mode :same t :inhibit-window-quit t)))
     :config
     (shackle-mode))
 
