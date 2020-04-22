@@ -31,7 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     auto-completion
+     (auto-completion :variables auto-completion-enable-help-tooltip t)
      better-defaults
      command-log
      common-lisp
@@ -59,6 +59,7 @@ values."
      company-quickhelp
      evil-cleverparens
      geiser
+     general
      shackle
      )
    ;; A list of packages that will not be installed and loaded.
@@ -399,6 +400,18 @@ you should place your code here."
     (geiser-active-implementations '(chicken))
     ;; (geiser-chicken-compile-geiser-p nil)
     )
+
+  (use-package general
+    :config
+    (general-define-key
+     ;; See https://github.com/noctuid/general.el/issues/55
+     :states '(normal evilified)
+     :prefix "SPC"
+     ;; Unfortunately modifying top-level binds like "SPC *" doesn't override
+     ;; the which-key string. Also I don't know how to do which-key "folders"
+     ;; The commands themselves seem to work fine though
+     "wpl" '(purpose-load-window-layout :which-key "purpose-load-layout")
+     "wps" '(purpose-save-window-layout t :which-key "purpose-save-layout")))
 
   ;; TODO Unfortunately hungry-delete has some sort of conflict with smartparens
   ;; See https://github.com/Fuco1/smartparens/issues/750
