@@ -322,6 +322,13 @@ you should place your code here."
   (push "~/.spacemacs.d/" load-path)
   (push "~/.spacemacs.d/lib/" load-path)
 
+  ;; Stops SPC-ESC-ESC-ESC from messing up windows, which I accidentally do often
+  ;; https://stackoverflow.com/questions/557282/
+  (defadvice keyboard-escape-quit
+      (around keyboard-escape-quit-dont-close-windows activate)
+    (let ((buffer-quit-function (lambda () ())))
+      ad-do-it))
+
   (org-babel-do-load-languages 'org-babel-load-languages
                                '((shell . t)))
 
