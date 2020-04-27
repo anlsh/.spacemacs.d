@@ -421,6 +421,11 @@ you should place your code here."
      "wpl" '(purpose-load-window-layout :which-key "purpose-load-layout")
      "wps" '(purpose-save-window-layout t :which-key "purpose-save-layout")))
 
+  (use-package helm
+    :init (push ".fasl" completion-ignored-extensions)
+    :custom
+    (helm-skip-boring-files t))
+
   ;; TODO Unfortunately hungry-delete has some sort of conflict with smartparens
   ;; See https://github.com/Fuco1/smartparens/issues/750
   ;; (use-package hungry-delete
