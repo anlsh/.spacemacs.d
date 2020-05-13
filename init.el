@@ -30,11 +30,10 @@ values."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
-     (auto-completion :variables auto-completion-enable-help-tooltip t)
+   '((auto-completion :variables auto-completion-enable-help-tooltip t)
      better-defaults
      command-log
-     common-lisp
+     common-lisp-sly
      coq
      emacs-lisp
      erc
@@ -56,7 +55,6 @@ values."
    dotspacemacs-additional-packages
    '(
      company-coq
-     company-quickhelp
      evil-cleverparens
      geiser
      general
@@ -342,6 +340,8 @@ you should place your code here."
                           scheme-mode-hook
                           slime-mode-hook
                           slime-repl-mode-hook
+                          sly-mode-hook
+                          sly-repl-mo
                           emacs-lisp-mode-hook
                           inferior-emacs-lisp-mode-hook))
   (defvar my-lisp-modes '(smartparens-mode
@@ -375,18 +375,14 @@ you should place your code here."
                 ("RET" . nil)
                 ("<return>" . nil))
     :config
-    (global-company-mode))
-
-  (use-package company-quickhelp
-    :defer t
-    :custom (company-quickhelp-delay 0)
-    :config (company-quickhelp-mode))
-
-  ;; (use-package company-coq
-  ;;   :custom
-  ;;   (coq-compile-before-require t)
-  ;;   :config
-  ;;   (load "~/.emacs.d/private/proof-general/generic/proof-site"))
+    (global-company-mode)
+    (use-package company-quickhelp
+      :defer t
+      :custom (company-quickhelp-delay 0))
+    (use-package company-coq
+      :defer t
+      :custom (coq-compile-before-require t)
+      :config (load "~/.emacs.d/private/proof-general/generic/proof-site")))
 
   (use-package dired
     :config
@@ -402,11 +398,9 @@ you should place your code here."
     ;; https://github.com/hlissner/doom-emacs/pull/896
     (setq evil-want-abbrev-expand-on-insert-exit nil))
 
-  (use-package geiser
-    :custom
-    (geiser-active-implementations '(chicken))
-    ;; (geiser-chicken-compile-geiser-p nil)
-    )
+  ;; (use-package geiser
+  ;;   :custom
+  ;;   (geiser-active-implementations '(chicken)))
 
   (use-package general
     :config
@@ -425,14 +419,6 @@ you should place your code here."
     :init (push ".fasl" completion-ignored-extensions)
     :custom
     (helm-skip-boring-files t))
-
-  ;; TODO Unfortunately hungry-delete has some sort of conflict with smartparens
-  ;; See https://github.com/Fuco1/smartparens/issues/750
-  ;; (use-package hungry-delete
-  ;;   :defer t
-  ;;   :delight
-  ;;   ;; :config (global-hungry-delete-mode)
-  ;;   )
 
   (use-package magit
     :custom
@@ -455,6 +441,9 @@ you should place your code here."
     :config
     (shackle-mode))
 
+  (use-package sly
+    :custom (inferior-lisp-program "/usr/bin/sbcl"))
+
   (use-package window-purpose
     :custom
     (purpose-layout-dirs '("~/.spacemacs.d/layouts/"))
@@ -465,7 +454,9 @@ you should place your code here."
                                   (slime-inspector-mode . cl-general)))
     (purpose-user-name-purposes '(("*inferior-lisp*" . cl-repl)
                                   ("*slime-repl sbcl*" . cl-repl)))
-    (purpose-user-regexp-purposes '(( "\*sldb.*" . cl-repl)))
+    (purpose-user-regexp-purposes '(( "\*sldb.*" . cl-repl)
+                                    ("\*sly-db" . cl-repl)
+                                    ("\*sly-mrepl" . cl-repl)))
     :config
     (purpose-compile-user-configuration))
 
@@ -524,8 +515,7 @@ you should place your code here."
     (add-to-list 'erc-modules 'notifications)
     (add-to-list 'erc-modules 'spelling)
     (erc-services-enable)
-    (erc-update-modules))
-  )
+    (erc-update-modules)))
 
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -551,24 +541,22 @@ you should place your code here."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-  (custom-set-variables
-   ;; custom-set-variables was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(erc-modules
-     (quote
-      (completion log notify notifications image youtube spelling hl-nicks netsplit fill button match track readonly networks ring autojoin noncommands irccontrols move-to-prompt stamp menu list)))
-   '(org-agenda-files (quote ("~/org")))
-   '(package-selected-packages
-     (quote
-      (company-quickhelp bug-hunter sly-repl-ansi-color sly-macrostep sly slime-company gnu-elpa-keyring-update command-log-mode pdf-tools company-web proof-general company-coq company-math math-symbol-lists tablist web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode web-completion-data yaml-mode ace-jump-mode noflet elfeed csv-mode ein deferred websocket web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern tern coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode dash-functional helm-pydoc cython-mode company-anaconda anaconda-mode pythonic auctex-latexmk company-auctex auctex company-flx erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks common-lisp-snippets visual-regexp-steroids visual-regexp unfill smeargle slime shackle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor evil-cleverparens company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
-  (custom-set-faces
-   ;; custom-set-faces was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(proof-eager-annotation-face ((t (:background "medium blue"))))
-   '(proof-error-face ((t (:background "dark red"))))
-   '(proof-warning-face ((t (:background "indianred3")))))
-  )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(erc-modules
+   '(completion log notify notifications image youtube spelling hl-nicks netsplit fill button match track readonly networks ring autojoin noncommands irccontrols move-to-prompt stamp menu list))
+ '(org-agenda-files '("~/org"))
+ '(package-selected-packages
+   '(adoc-mode markup-faces proof-general geiser company-quickhelp lv transient paredit bug-hunter sly-repl-ansi-color sly-macrostep sly slime-company gnu-elpa-keyring-update command-log-mode pdf-tools company-web company-coq company-math math-symbol-lists tablist web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode web-completion-data yaml-mode ace-jump-mode noflet elfeed csv-mode ein deferred websocket web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern tern coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode dash-functional helm-pydoc cython-mode company-anaconda anaconda-mode pythonic auctex-latexmk company-auctex auctex company-flx erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks common-lisp-snippets visual-regexp-steroids visual-regexp unfill smeargle slime shackle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor evil-cleverparens company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(proof-eager-annotation-face ((t (:background "medium blue"))))
+ '(proof-error-face ((t (:background "dark red"))))
+ '(proof-warning-face ((t (:background "indianred3")))))
+)
